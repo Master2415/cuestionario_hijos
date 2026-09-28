@@ -1,0 +1,21 @@
+# Backend de Google Apps Script (contiene IDs y configuración privada)
+code.gs
+
+# Configuración local y credenciales
+.env
+.env.*
+!.env.example
+credentials.json
+secrets.json
+
+# Archivos del sistema y del editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporales y registros
+*.log
+*.tmp
+*.bak
+~*
