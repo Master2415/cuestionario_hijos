@@ -4,6 +4,7 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta de Colaboradores - Horisoes IPS</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -115,6 +116,7 @@
     .required::after { content: ' *'; color: #c53030; }
     input[type="text"],
     input[type="number"],
+    input[type="date"],
     select,
     textarea {
       width: 100%;
@@ -132,6 +134,15 @@
       border-color: #7b3fa0;
       background: #ffffff;
       box-shadow: 0 0 0 3px rgba(123, 63, 160, 0.15);
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.65;
+      filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(253deg) brightness(89%) contrast(97%);
+      transition: opacity 0.2s;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      opacity: 1;
     }
     select { cursor: pointer; }
     .radio-group {
@@ -231,11 +242,11 @@
       color: #8a7a99;
       font-size: 12px;
     }
-      /* Diseño compartido con HoriViaje */
+    /* Diseño compartido con HoriViaje */
     body{min-height:100vh;padding:34px 18px;background-image:linear-gradient(rgba(15,5,50,.76),rgba(30,10,80,.82)),url('img/Abril%20(2).png');background-size:cover;background-position:center;background-attachment:fixed;font-family:'Nunito',sans-serif}
     .brand-bar{display:flex;align-items:center;justify-content:center;gap:13px;margin:0 auto 22px;color:#fff}.brand-logo{width:72px;height:72px;padding:4px;border-radius:18px;background:#fff;object-fit:contain;box-shadow:0 4px 20px rgba(124,58,237,.4)}.brand-name{font:700 25px/1.1 'Poppins',sans-serif}.brand-sub{margin-top:4px;color:#c4b5fd;font-size:11px;letter-spacing:2px;text-transform:uppercase}
     .container{max-width:720px;border-radius:20px;box-shadow:0 12px 60px rgba(0,0,0,.5)}.header{padding:25px 40px;background:#4c1d95;border-top:7px solid #7c3aed;text-align:left}.header::before,.header::after{display:none}.logo{font:700 25px 'Poppins',sans-serif;color:#38bdf8;text-shadow:none}.logo span{color:#38bdf8}.header h2{color:#fff;font-family:'Poppins',sans-serif;font-weight:600}.header p{color:#ddd6fe}
-    .section{border-bottom:1px dashed #c4b5fd}.section-title{color:#4c1d95;font-family:'Poppins',sans-serif}.section-title::before{background:#6d28d9}label{color:#6d28d9}input[type="text"],input[type="number"],select,textarea{border-color:#ddd6fe;background:#f5f3ff;font-family:'Nunito',sans-serif}.radio-option{border-color:#ddd6fe;background:#f5f3ff}.radio-option.selected{border-color:#7c3aed;background:#ede9fe;color:#4c1d95}button[type="submit"]{background:#6d28d9;font-family:'Poppins',sans-serif}.hijo-card{border-style:dashed;border-color:#a78bfa;background:#faf8ff}.privacy-note{max-width:720px;margin:18px auto 0;padding:12px 18px;border-radius:12px;color:#ddd6fe;background:rgba(255,255,255,.08);text-align:center;font-size:12px}
+    .section{border-bottom:1px dashed #c4b5fd}.section-title{color:#4c1d95;font-family:'Poppins',sans-serif}.section-title::before{background:#6d28d9}label{color:#6d28d9}input[type="text"],input[type="number"],input[type="date"],select,textarea{border-color:#ddd6fe;background:#f5f3ff;font-family:'Nunito',sans-serif}.radio-option{border-color:#ddd6fe;background:#f5f3ff}.radio-option.selected{border-color:#7c3aed;background:#ede9fe;color:#4c1d95}button[type="submit"]{background:#6d28d9;font-family:'Poppins',sans-serif}.hijo-card{border-style:dashed;border-color:#a78bfa;background:#faf8ff}.privacy-note{max-width:720px;margin:18px auto 0;padding:12px 18px;border-radius:12px;color:#ddd6fe;background:rgba(255,255,255,.08);text-align:center;font-size:12px}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 </head>
@@ -265,8 +276,27 @@
             <input type="text" id="numeroDocumento" name="numeroDocumento" placeholder="Ej: 1020304050" required>
           </div>
           <div class="form-group">
+            <label class="required" for="fechaNacimiento">Fecha de nacimiento</label>
+            <input type="date" id="fechaNacimiento" name="fechaNacimiento" onchange="autoCalcularEdadColaborador()" oninput="autoCalcularEdadColaborador()" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="form-group">
             <label class="required" for="edad">Edad</label>
             <input type="number" id="edad" name="edad" min="18" max="100" placeholder="Ej: 32" required>
+          </div>
+          <div class="form-group">
+            <label class="required" for="estadoCivil">Estado civil</label>
+            <select id="estadoCivil" name="estadoCivil" required>
+              <option value="">Seleccione...</option>
+              <option>Soltero(a)</option>
+              <option>Casado(a)</option>
+              <option>Unión libre</option>
+              <option>Separado(a)</option>
+              <option>Divorciado(a)</option>
+              <option>Viudo(a)</option>
+            </select>
           </div>
         </div>
 
@@ -277,19 +307,6 @@
             <label class="radio-option"><input type="radio" name="sexo" value="Mujer"> Mujer</label>
             <label class="radio-option"><input type="radio" name="sexo" value="Prefiero no responder"> Prefiero no responder</label>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label class="required" for="estadoCivil">Estado civil</label>
-          <select id="estadoCivil" name="estadoCivil" required>
-            <option value="">Seleccione...</option>
-            <option>Soltero(a)</option>
-            <option>Casado(a)</option>
-            <option>Unión libre</option>
-            <option>Separado(a)</option>
-            <option>Divorciado(a)</option>
-            <option>Viudo(a)</option>
-          </select>
         </div>
 
         <div class="form-group">
@@ -399,6 +416,7 @@
 
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEmLVjTQ-UarLQQ9MZdqD59gzI_18pNfzPYWUz0Im0VSpHHrtCFv3CJNvDek414ooi/exec';
+    
     document.addEventListener('change', function(e) {
       if (e.target.type === 'radio') {
         const grupo = e.target.closest('.radio-group');
@@ -408,6 +426,54 @@
         }
       }
     });
+
+    // Establece fecha máxima (hoy) en la fecha de nacimiento del colaborador
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputFecha = document.getElementById('fechaNacimiento');
+      if (inputFecha) {
+        inputFecha.max = new Date().toISOString().split('T')[0];
+      }
+    });
+
+    function calcularEdadDesdeFecha(fechaStr) {
+      if (!fechaStr) return '';
+      const partes = fechaStr.split('-');
+      if (partes.length !== 3) return '';
+      const anio = parseInt(partes[0], 10);
+      const mes = parseInt(partes[1], 10) - 1;
+      const dia = parseInt(partes[2], 10);
+      if (isNaN(anio) || isNaN(mes) || isNaN(dia)) return '';
+      const nac = new Date(anio, mes, dia);
+      const hoy = new Date();
+      if (isNaN(nac.getTime())) return '';
+
+      let edad = hoy.getFullYear() - nac.getFullYear();
+      const m = hoy.getMonth() - nac.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) {
+        edad--;
+      }
+      return edad >= 0 ? edad : 0;
+    }
+
+    function autoCalcularEdadColaborador() {
+      const fechaVal = document.getElementById('fechaNacimiento').value;
+      const edadInput = document.getElementById('edad');
+      const edadCalculada = calcularEdadDesdeFecha(fechaVal);
+      if (edadCalculada !== '') {
+        edadInput.value = edadCalculada;
+      }
+    }
+
+    function autoCalcularEdadHijo(indice) {
+      const fechaInput = document.getElementById('hijo' + indice + '_fechaNacimiento');
+      const edadInput = document.getElementById('hijo' + indice + '_edad');
+      if (fechaInput && edadInput) {
+        const edadCalculada = calcularEdadDesdeFecha(fechaInput.value);
+        if (edadCalculada !== '') {
+          edadInput.value = edadCalculada;
+        }
+      }
+    }
 
     function toggleEstudio() {
       const estudiando = document.querySelector('input[name="estudiando"]:checked');
@@ -445,6 +511,7 @@
       const numero = parseInt(document.getElementById('numeroHijos').value) || 0;
       const contenedor = document.getElementById('camposHijos');
       contenedor.innerHTML = '';
+      const hoyISO = new Date().toISOString().split('T')[0];
 
       for (let i = 1; i <= numero; i++) {
         const div = document.createElement('div');
@@ -453,31 +520,35 @@
           <div class="hijo-card-title">Hijo(a) ${i}</div>
           <div class="row">
             <div class="form-group">
-              <label class="required">Edad</label>
-              <input type="number" name="hijo${i}_edad" min="0" max="80" placeholder="Ej: 5" required>
+              <label class="required" for="hijo${i}_fechaNacimiento">Fecha de nacimiento</label>
+              <input type="date" id="hijo${i}_fechaNacimiento" name="hijo${i}_fechaNacimiento" max="${hoyISO}" onchange="autoCalcularEdadHijo(${i})" oninput="autoCalcularEdadHijo(${i})" required>
             </div>
             <div class="form-group">
-              <label class="required">Sexo</label>
-              <select name="hijo${i}_sexo" required>
+              <label class="required" for="hijo${i}_edad">Edad</label>
+              <input type="number" id="hijo${i}_edad" name="hijo${i}_edad" min="0" max="80" placeholder="Ej: 5" required>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="required" for="hijo${i}_sexo">Sexo</label>
+              <select id="hijo${i}_sexo" name="hijo${i}_sexo" required>
                 <option value="">Seleccione...</option>
                 <option>Hombre</option>
                 <option>Mujer</option>
               </select>
             </div>
-          </div>
-          <div class="row">
             <div class="form-group">
-              <label class="required">¿Vive con usted?</label>
-              <select name="hijo${i}_vive" required>
+              <label class="required" for="hijo${i}_vive">¿Vive con usted?</label>
+              <select id="hijo${i}_vive" name="hijo${i}_vive" required>
                 <option value="">Seleccione...</option>
                 <option>Sí</option>
                 <option>No</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="required">Ciudad donde vive</label>
-              <input type="text" name="hijo${i}_ciudad" placeholder="Ej: Medellín" required>
-            </div>
+          </div>
+          <div class="form-group">
+            <label class="required" for="hijo${i}_ciudad">Ciudad donde vive</label>
+            <input type="text" id="hijo${i}_ciudad" name="hijo${i}_ciudad" placeholder="Ej: Medellín" required>
           </div>
         `;
         contenedor.appendChild(div);
