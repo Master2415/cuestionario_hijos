@@ -530,50 +530,16 @@
       <button type="submit" id="btnEnviar">Enviar Registro</button>
     </form>
 
-    <!-- ============ PANTALLA DE CONFIRMACIÓN Y PROTECCIÓN CONTRA DUPLICADOS ============ -->
+    <!-- ============ PANTALLA DE CONFIRMACIÓN ============ -->
     <div id="pantallaExito" class="pantalla-exito hidden">
       <div class="exito-icono">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </div>
-      <h2>¡Formulario Diligenciado con Éxito!</h2>
-      <p class="subtitulo" id="exitoSubtitulo">Tu información ha sido registrada y sincronizada correctamente en la base de datos de Horisoes IPS.</p>
-
-      <div class="alerta-bloqueo">
-        <span style="font-size: 24px;">🔒</span>
-        <div>
-          <strong style="color: #7f1d1d;">Registro completado y protegido:</strong><br>
-          Para evitar duplicidad o desajuste de datos, este formulario ya no se puede volver a diligenciar en este dispositivo.
-        </div>
-      </div>
-
-      <div class="resumen-recibo">
-        <div class="resumen-recibo-titulo">Comprobante de Envío</div>
-        <div class="resumen-fila">
-          <span class="resumen-label">Colaborador:</span>
-          <span class="resumen-valor" id="reciboNombre">-</span>
-        </div>
-        <div class="resumen-fila">
-          <span class="resumen-label">Documento:</span>
-          <span class="resumen-valor" id="reciboDocumento">-</span>
-        </div>
-        <div class="resumen-fila">
-          <span class="resumen-label">Fecha y hora de registro:</span>
-          <span class="resumen-valor" id="reciboFecha">-</span>
-        </div>
-        <div class="resumen-fila">
-          <span class="resumen-label">Estado:</span>
-          <span class="resumen-valor" style="color: #059669;">✅ Sincronizado en base de datos</span>
-        </div>
-      </div>
-
-      <p class="nota-gestion">
-        Si necesitas actualizar o modificar algún dato, por favor comunícate directamente con el área de <strong>Gestión Humana</strong>.
-      </p>
-
-      <button type="button" class="btn-secundario" onclick="reiniciarParaOtroColaborador()">
-        ¿Deseas registrar a otro colaborador en este equipo?
+      <h2>Gracias por llenar el formulario</h2>
+      <button type="button" class="btn-secundario" style="margin-top: 25px;" onclick="reiniciarParaOtroColaborador()">
+        ¿Deseas diligenciar otro registro?
       </button>
     </div>
 
@@ -743,30 +709,17 @@
       divMensaje.textContent = '';
       divMensaje.classList.remove('show');
 
-      const onSuccess = function(respuesta) {
+      const onSuccess = function() {
         btn.disabled = false;
         btn.textContent = 'Enviar Registro';
 
-        const fechaHoraActual = new Date().toLocaleString('es-CO', { 
-          year: 'numeric', month: 'long', day: 'numeric', 
-          hour: '2-digit', minute: '2-digit', hour12: true 
-        });
-
-        const recibo = {
-          completado: true,
-          nombre: datos.nombreCompleto || 'Colaborador(a)',
-          documento: datos.numeroDocumento || '-',
-          fecha: fechaHoraActual,
-          mensajeServidor: respuesta || '¡Datos guardados correctamente!'
-        };
-
         try {
-          localStorage.setItem('horisoes_form_registrado', JSON.stringify(recibo));
+          localStorage.setItem('horisoes_form_registrado', 'true');
         } catch(err) {
           console.warn('LocalStorage no disponible:', err);
         }
 
-        mostrarPantallaExito(recibo, respuesta);
+        mostrarPantallaExito();
       };
 
       const onFailure = function(error) {
@@ -784,7 +737,7 @@
           mode: 'no-cors',
           headers: {'Content-Type': 'text/plain;charset=utf-8'},
           body: JSON.stringify(datos)
-        }).then(() => onSuccess('¡Datos guardados correctamente!')).catch(onFailure);
+        }).then(() => onSuccess()).catch(onFailure);
       } else { 
         onFailure(new Error('Configure APPS_SCRIPT_URL en Index.html antes de publicar en GitHub Pages.')); 
       }
@@ -792,19 +745,16 @@
 
     function verificarRegistroPrevio() {
       try {
-        const raw = localStorage.getItem('horisoes_form_registrado');
-        if (raw) {
-          const recibo = JSON.parse(raw);
-          if (recibo && recibo.completado) {
-            mostrarPantallaExito(recibo, 'Registro previo detectado en este dispositivo.');
-          }
+        const registrado = localStorage.getItem('horisoes_form_registrado');
+        if (registrado === 'true' || registrado) {
+          mostrarPantallaExito();
         }
       } catch (e) {
         console.warn('Error al verificar registro previo:', e);
       }
     }
 
-    function mostrarPantallaExito(recibo, mensajeExtra) {
+    function mostrarPantallaExito() {
       const formulario = document.getElementById('miFormulario');
       const pantalla = document.getElementById('pantallaExito');
       const divMensaje = document.getElementById('mensaje');
@@ -813,23 +763,11 @@
       if (divMensaje) divMensaje.classList.remove('show');
       if (pantalla) pantalla.classList.remove('hidden');
 
-      const elNombre = document.getElementById('reciboNombre');
-      const elDoc = document.getElementById('reciboDocumento');
-      const elFecha = document.getElementById('reciboFecha');
-      const elSubtitulo = document.getElementById('exitoSubtitulo');
-
-      if (elNombre) elNombre.textContent = recibo.nombre || 'Colaborador';
-      if (elDoc) elDoc.textContent = recibo.documento || '-';
-      if (elFecha) elFecha.textContent = recibo.fecha || new Date().toLocaleString();
-      if (elSubtitulo) {
-        elSubtitulo.textContent = `Hola ${recibo.nombre || ''}, tu información ya fue recibida y registrada exitosamente en nuestra base de datos.`;
-      }
-
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function reiniciarParaOtroColaborador() {
-      const confirma = confirm('¿Está seguro de que desea registrar a OTRO colaborador en este mismo dispositivo?\n\n(El registro anterior ya quedó guardado de forma permanente en la base de datos).');
+      const confirma = confirm('¿Deseas diligenciar el formulario para otro colaborador en este equipo?');
       if (confirma) {
         try {
           localStorage.removeItem('horisoes_form_registrado');
